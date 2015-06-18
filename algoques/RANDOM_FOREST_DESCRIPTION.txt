@@ -1,0 +1,28 @@
+The tertiary random forest here is a collection of regression trees. The output of the forest is mean of outcomes of each tree.
+
+The structure of each tree is as follows
+
+NUM_PREDICTORS <number_of_predictors>    // number of predictors
+TREESTART <index_of_the_tree>		 // Signifies start of a new tree.
+TREELINE  <index_of_1st_child>  <index_of_2nd_child>  <index_of_3rd_child>  <index_of_predictor_used_at_this_node>  <Value_1>  <Value_2>  <Y/N>  <Prediction>
+TREELINE ...
+TREELINE ...
+
+A tree in the model file starts with the tag 'TREESTART' followed by the index of this tree.
+It is followed by tree lines, each of them corresponding to a node in the tree.
+Each tree line starts with the tag 'TREELINE'. At each non-terminal node in the tree
+there are three candidate nodes to go to. If the value of the predictor is less than 'Value_1', 
+then we move to the 1st child of this node, else if the value of the predictor is greater than equal to 'Value_1'
+and less than equal to 'Value_2' then we go to 2nd child, else we go to the 3rd node.
+i.e: { < Value_1 } { >= Value_1 && <= Value_2 } { > Value_2 }
+Note that Value_1 will be always strictly less than Value_2 in every valid tree.
+The indices of the 1st, 2nd and 3rd child are given in 2nd,3rd,4th column of the treeline corresponding to each non-terminal node.
+For terminal nodes 2nd, 3rd, 4th colums are '-1'.
+The 5th column is the index of the predictor to be used for evaluating the above conditions.
+The 6th, 7th columns are 'Value_1' and 'Value_2' respectively.
+The 8th is a flag which is 'Y' if the node is a terminal node and 'N' if node is a non-terminal node.
+The last column is the prediction value at this node. For our purpose this is meaningful only for terminal nodes.
+
+Notes:
+The i'th "TREELINE" line refers to node labeled (i-1). For instance the first "TREELINE" refers to the root which is Node0.
+You will find a graphical representaion of this in the file Sample_Random_Forest_Spec.pdf
