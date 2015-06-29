@@ -19,9 +19,19 @@ int main ( int argc, char ** argv )
   
   std::ifstream inputdatafile_;
   inputdatafile_.open ( inputdatafilename_.c_str(), std::ifstream::in ) ;
+  if ( ! inputdatafile_.is_open() )
+    {
+      std::cerr << "ERROR: Cannot open " << inputdatafilename_ << " for reading." << std::endl;
+      std::exit ( 0 ) ;
+    }
 
   std::ofstream outputdatafile_;
   outputdatafile_.open ( outputdatafilename_.c_str(), std::ios::out ) ;
+  if ( ! outputdatafile_.is_open() )
+    {
+      std::cerr << "ERROR: Cannot open " << outputdatafilename_ << " for writing." << std::endl;
+      std::exit ( 0 ) ;
+    }
 
   const int kDataLineBufferLen = 1024 ;
   char readline_buffer_ [ kDataLineBufferLen ];

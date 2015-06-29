@@ -140,9 +140,10 @@ namespace AlgoComp {
                 ifs_.close();
             }
             else
-            {
-                std::cerr << "ERROR: Cannot open " << _forest_filename_ << " for reading." << std::endl;
-            }
+	      {
+		std::cerr << "ERROR: Cannot open " << _forest_filename_ << " for reading." << std::endl;
+		std::exit ( 0 ) ;
+	      }
             
         }
         
