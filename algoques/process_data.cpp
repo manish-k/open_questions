@@ -68,7 +68,6 @@ int main ( int argc, char ** argv )
 	}
       else
 	{
-	  std::cerr << "Time " << tokens_[0] << "\n";
 	  for ( unsigned int i = 2u; i < tokens_.size (); i ++ )
 	    {
 	      last_indicator_values_[i-2u] = atof ( tokens_[i] ) ;
