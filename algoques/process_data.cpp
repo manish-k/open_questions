@@ -7,10 +7,11 @@ class OutputDumper : public AlgoComp::OutputChangeListener
   std::ofstream outputdatafile_;
   unsigned int samplingrate_;
   unsigned int samplingcounter_;
+  AlgoComp::cyclecount_t total_dump_time_;
 
  public:
   OutputDumper ( const std::string & _dumpfilename_ , unsigned int _samplingrate_ )
-      : samplingrate_(_samplingrate_) , samplingcounter_(0u) 
+      : samplingrate_(_samplingrate_) , samplingcounter_(0u) , total_dump_time_(0)
   {
     outputdatafile_.open ( _dumpfilename_.c_str(), std::ios::out ) ;
     if ( ! outputdatafile_.is_open() )
@@ -27,13 +28,19 @@ class OutputDumper : public AlgoComp::OutputChangeListener
 
   void OnOutputChange ( double _new_out_value_ ) 
   {
+      
+    AlgoComp::cyclecount_t prev_call_ = AlgoComp::GetCpucycleCount();
     samplingcounter_ ++;
     if ( samplingcounter_ >= samplingrate_ )
     {
       outputdatafile_ << _new_out_value_ << std::endl;
       samplingcounter_ = 0;
     }
+    AlgoComp::cyclecount_t after_call_ = AlgoComp::GetCpucycleCount();
+    total_dump_time_ += (after_call_-prev_call_);
   }
+
+  AlgoComp::cyclecount_t GetDumpTime() { return total_dump_time_; }
 };
 
 int main ( int argc, char ** argv )
@@ -107,5 +114,7 @@ int main ( int argc, char ** argv )
   }
 
   std::cout << "Outputfile: " << outputdatafilename_ << " written. " << std::endl;
-  std::cout << "Computation cycles: " << total_time_taken_ << std::endl;
+  std::scientific;
+  std::cout << "Computation cycles: "<< 1.0*(total_time_taken_ - dumper_.GetDumpTime()) << std::endl;
+  std::cout << "Printing cycles: " << 1.0*(dumper_.GetDumpTime()) << std::endl;
 }
