@@ -34,7 +34,7 @@ namespace AlgoComp {
     
     //_new_listener_ shoud be notified by calling _new_listener_->OnOutputChange on every change in Forest Output
     //should return true if _new_listener_ is successfully subscribed to Forest output updates
-    bool SubscribeOutputChange ( OutputChangeListener * _new_listener_ ) { } ///needs to be implemented
+    bool SubscribeOutputChange ( OutputChangeListener * _new_listener_ ) { return true; } ///needs to be implemented
 
   };
 
