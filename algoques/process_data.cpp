@@ -13,7 +13,7 @@ class OutputDumper : public AlgoComp::OutputChangeListener
   OutputDumper ( const std::string & _dumpfilename_ , unsigned int _samplingrate_ )
       : samplingrate_(_samplingrate_) , samplingcounter_(0u) , total_dump_time_(0)
   {
-    outputdatafile_.open ( _dumpfilename_.c_str(), std::ios::out ) ;
+	outputdatafile_.open ( _dumpfilename_.c_str(), std::ios::out|std::ios::binary ) ;
     if ( ! outputdatafile_.is_open() )
     {
       std::cerr << "ERROR: Cannot open " << _dumpfilename_ << " for writing." << std::endl;
@@ -70,7 +70,7 @@ int main ( int argc, char ** argv )
 
   const int kDataLineBufferLen = 1024 ;
   char readline_buffer_ [ kDataLineBufferLen ];
-  bzero ( readline_buffer_, kDataLineBufferLen );
+  memset ( readline_buffer_, '\0', kDataLineBufferLen );
 
   AlgoComp::cyclecount_t total_time_taken_ = 0;
 
@@ -84,7 +84,7 @@ int main ( int argc, char ** argv )
 
   while ( inputdatafile_.good ( ) )
   {
-    bzero ( readline_buffer_, kDataLineBufferLen );
+    memset ( readline_buffer_, '\0', kDataLineBufferLen );
     inputdatafile_.getline ( readline_buffer_, kDataLineBufferLen ) ;
     AlgoComp::PerishableStringTokenizer st_ ( readline_buffer_, kDataLineBufferLen );
     const std::vector < const char * > & tokens_ = st_.GetTokens ( );

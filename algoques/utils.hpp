@@ -3,8 +3,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <inttypes.h>
-#include <unistd.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <vector>
@@ -14,9 +13,19 @@
 
 
 namespace AlgoComp {
-typedef unsigned long cyclecount_t;
+typedef uint64_t cyclecount_t;
 
-static __inline__ cyclecount_t GetCpucycleCount(void)
+#ifdef _WIN32
+//Windows
+#include <intrin.h>
+static inline cyclecount_t GetCpucycleCount(void)
+{
+  return __rdtsc();
+}
+
+#else
+//Linux
+static inline cyclecount_t GetCpucycleCount(void)
 {
   uint32_t lo, hi;
   __asm__ __volatile__ (      // serialize
@@ -26,6 +35,8 @@ static __inline__ cyclecount_t GetCpucycleCount(void)
   __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
   return (cyclecount_t)hi << 32 | lo;
 }
+
+#endif //_WIN32
 
 class PerishableStringTokenizer {
  public:
@@ -112,7 +123,7 @@ class Forest
       char buffer_[kbufferlen];
       while ( ifs_.good() )
       {
-        bzero( buffer_, kbufferlen );
+        memset( buffer_, '\0' , kbufferlen );
         ifs_.getline( buffer_, kbufferlen );
 
         PerishableStringTokenizer tokenizer_ ( buffer_, kbufferlen );

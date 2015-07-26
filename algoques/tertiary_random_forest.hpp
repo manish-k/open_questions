@@ -140,13 +140,13 @@ class TertiaryRandomForest : public InputChangeListener {
     {
       const unsigned int kModelLineBufferLen = 1024 ;
       char readline_buffer_ [ kModelLineBufferLen ];
-      bzero ( readline_buffer_, kModelLineBufferLen );
+      memset ( readline_buffer_, '\0', kModelLineBufferLen );
       unsigned int tree_count_ = 0;
       unsigned int tree_line_count_ = 0;
 
       while ( model_infile_.good ( ) )
       {
-        bzero ( readline_buffer_, kModelLineBufferLen );
+        memset ( readline_buffer_, '\0', kModelLineBufferLen );
         model_infile_.getline ( readline_buffer_, kModelLineBufferLen ) ;
         if ( model_infile_.gcount ( ) > 0 )
         {
