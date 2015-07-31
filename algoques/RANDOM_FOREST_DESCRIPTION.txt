@@ -18,7 +18,7 @@ i.e: { < Value_1 } { >= Value_1 && <= Value_2 } { > Value_2 }
 Note that Value_1 will be always strictly less than Value_2 in every valid tree.
 The indices of the 1st, 2nd and 3rd child are given in 2nd,3rd,4th column of the treeline corresponding to each non-terminal node.
 For terminal nodes 2nd, 3rd, 4th colums are '-1'.
-The 5th column is the index of the predictor to be used for evaluating the above conditions.
+The 5th column is the index of the predictor to be used for evaluating the above conditions. Note that these indices are from 0 to number_of_predictors-1.
 The 6th, 7th columns are 'Value_1' and 'Value_2' respectively.
 The 8th is a flag which is 'Y' if the node is a terminal node and 'N' if node is a non-terminal node.
 The last column is the prediction value at this node. For our purpose this is meaningful only for terminal nodes.
