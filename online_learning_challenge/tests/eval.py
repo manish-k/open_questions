@@ -46,8 +46,9 @@ def run( ):
         ret_frame = pd.DataFrame.from_csv( filename )
         logret_matrix = ret_frame.values
         weight_matrix = numpy.empty( logret_matrix.shape )
-        for day in range( logret_matrix.shape[ 0 ] ):
-            weight_matrix[ day, : ] = get_weights( logret_matrix[ : day + 1, : ] )
+        weight_matrix[ 0, : ] = numpy.array( [ 1.0 / logret_matrix.shape[ 1 ] ] * logret_matrix.shape[ 1 ] )
+        for day in range( logret_matrix.shape[ 0 ] -1 ):
+            weight_matrix[ day + 1, : ] = get_weights( logret_matrix[ : day, : ] )
         perf_stats.add_row( [ i + 1 ] + list( getPerformanceStats( logret_matrix, weight_matrix ) ) )
     perf_stats.align = "c"
     print perf_stats
