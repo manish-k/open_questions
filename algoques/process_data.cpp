@@ -76,9 +76,11 @@ int main ( int argc, char ** argv )
 
   AlgoComp::TertiaryRandomForest tertiary_random_forest_;
   tertiary_random_forest_.InitializeForest ( forest_filename_.c_str() );
+  //tertiary_random_forest_.PrintForestMetaInfo();
 
   OutputDumper dumper_(outputdatafilename_, samplingrate_);
   tertiary_random_forest_.SubscribeOutputChange(&dumper_);
+  tertiary_random_forest_.write_all_output_ = true;
 
   std::vector < double > last_indicator_values_ ;
 
@@ -108,6 +110,8 @@ int main ( int argc, char ** argv )
       // Perhaps calculation of what is a significant change is best done inside the TertiaryRandomForest ?
       AlgoComp::cyclecount_t prev_call_ = AlgoComp::GetCpucycleCount();
       double forest_delta_value_ = tertiary_random_forest_.OnInputChange ( i-2u, last_indicator_values_[i-2u] ) ;
+      //std::cout<<last_indicator_values_[i-2u]<<std::endl;
+      //std::cout<<"-----------"<<std::endl;
       AlgoComp::cyclecount_t after_call_ = AlgoComp::GetCpucycleCount();
       total_time_taken_ += ( after_call_ - prev_call_ );
     }

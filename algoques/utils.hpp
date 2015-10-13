@@ -8,6 +8,7 @@
 #include <ctype.h>
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -107,6 +108,33 @@ class Node
 };
 
 typedef std::vector<Node> Tree;
+
+class NodeMetaInfo
+{
+  public:
+    int predictor_index_;
+    int predictor_node_loc_;
+    double boundary_value_1_;
+    double boundary_value_2_;
+    int current_region_;
+
+    //ctor
+    NodeMetaInfo(Node n, int loc):
+      predictor_index_(n.predictor_index_),
+      predictor_node_loc_(loc),
+      boundary_value_1_(n.boundary_value_vec_.at(0)),
+      boundary_value_2_(n.boundary_value_vec_.at(1)),
+      current_region_(-1) {}
+
+    NodeMetaInfo():
+      predictor_index_(-1),
+      predictor_node_loc_(-1),
+      boundary_value_1_(-1),
+      boundary_value_2_(-1), 
+      current_region_(-1) {}
+};
+
+typedef std::unordered_map<int, std::vector<NodeMetaInfo>> TreeMetaInfo;
 
 class Forest
 {
