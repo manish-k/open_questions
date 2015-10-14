@@ -50,8 +50,12 @@ namespace AlgoComp {
         it_tree_++;
       }
 
-      for(int i=0; i<forest_->tree_vec_.size(); i++)
+      forest_size_ = forest_->tree_vec_.size();
+      for(int i=0; i<forest_size_; i++)
         forest_output_.push_back(0.0);
+      for(int i=0; i<forest_size_; i++)
+        compute_this_tree_.push_back(false);
+      tree_threads_ = new std::thread[forest_size_];
     } 
 
     void PrintForestMetaInfo()
@@ -84,7 +88,7 @@ namespace AlgoComp {
       std::vector<AlgoComp::TreeMetaInfo>::iterator it_forest_meta_info_;  
       it_forest_meta_info_ = forest_meta_info_.begin();
       predictors_map_[input_index_] = input_value_;
-      unsigned int forest_tree_index_ = 0;
+      unsigned int forest_tree_index_ = 0, i, j;
       while(it_forest_meta_info_ != forest_meta_info_.end())
       {
         AlgoComp::TreeMetaInfo tree_meta_info_map_ = *it_forest_meta_info_;
@@ -107,7 +111,8 @@ namespace AlgoComp {
             if (input_region_ != node_info_.current_region_)
             {
               //std::cout<<"tree index: "<<forest_tree_index_<<std::endl;
-              ComputeNewOutputOnTree( forest_tree_index_, input_index_, input_value_);
+              //ComputeNewOutputOnTree( forest_tree_index_, input_index_, input_value_);
+              compute_this_tree_[forest_tree_index_] = true;
               new_output_ = true;
               it_map_value_vec_->current_region_ = input_region_;
               // output changed flag
@@ -118,6 +123,34 @@ namespace AlgoComp {
         ++forest_tree_index_;
         ++it_forest_meta_info_;
       }
+      
+      for(j=0; j<forest_size_; j++)
+      {
+        if( compute_this_tree_[j])
+        {
+          /*
+          thread_create_return_ = pthread_create(&tree_threads_[j], 0, AlgoComp::TertiaryRandomForest::ComputeNewOutputOnTree, (void *)j);  
+          if (thread_create_return_ != 0)
+            std::cout<<"pthread_create failed"<<std::endl;
+          */
+          tree_threads_[j] = std::thread(TertiaryRandomForest::ComputeNewOutputOnTree, j);
+        }
+      }
+      for(i=0; i<forest_size_; i++)
+      {
+        if(compute_this_tree_[i])
+        {
+          /*
+          thread_join_return_ = pthread_join(tree_threads_[i], &thread_return_[i]);  
+          if (thread_join_return_ != 0)
+            std::cout<<"pthread_join failed"<<std::endl;
+          */
+          tree_threads_[i].join();
+        }
+      }
+
+      for(i=0; i<forest_size_; i++)
+        compute_this_tree_[i] = false;
       //calculate mean of forest
       double forest_mean_output_ = 0.0;
       //std::cout<<"current predictor index "<<input_index_<<std::endl;
@@ -125,7 +158,7 @@ namespace AlgoComp {
       int num_outputs_ = forest_output_.size();
       if(new_output_ || write_all_output_)
       {
-        for(int i=0; i<num_outputs_; i++)
+        for(i=0; i<num_outputs_; i++)
           forest_mean_output_ += forest_output_[i];
 
         forest_mean_output_ = forest_mean_output_ / num_outputs_;
@@ -144,8 +177,9 @@ namespace AlgoComp {
       return true;
     } 
 
-    void ComputeNewOutputOnTree ( unsigned int tree_index_, unsigned int input_index_, double input_value_ )
+    static void ComputeNewOutputOnTree ( unsigned int _index_)
     {
+      unsigned int tree_index_ = (unsigned int) _index_;
       AlgoComp::Tree compute_tree_ = forest_->tree_vec_[tree_index_];
       int temp_node_index_ = 0;
       int current_predictor_index_;
@@ -172,22 +206,28 @@ namespace AlgoComp {
         else
         {
           forest_output_[tree_index_] = 0.0;
-          return;
+          pthread_exit(0);
         }
       }
       forest_output_[tree_index_] = compute_tree_[temp_node_index_].predicted_value_;
       //std::cout<<"tree output: "<<forest_output_[tree_index_]<<std::endl;
-      return;
+      pthread_exit(0);
     }
 
   private:
-    AlgoComp::Forest *forest_;
+    static AlgoComp::Forest *forest_;
+    unsigned int forest_size_;
     std::vector<AlgoComp::TreeMetaInfo> forest_meta_info_; 
-    std::vector<double> forest_output_;
-    std::unordered_map<int, double> predictors_map_;
+    static std::vector<double> forest_output_;
+    static std::unordered_map<int, double> predictors_map_;
     OutputChangeListener * listener_;
     bool new_output_;
+    std::vector<bool> compute_this_tree_;
+    std::thread *tree_threads_;
   };
 
+  AlgoComp::Forest * TertiaryRandomForest::forest_;
+  std::vector<double> TertiaryRandomForest::forest_output_;
+  std::unordered_map<int, double> TertiaryRandomForest::predictors_map_;
   
 }
