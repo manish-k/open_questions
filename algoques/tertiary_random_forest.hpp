@@ -107,7 +107,7 @@ namespace AlgoComp {
             if (input_region_ != node_info_.current_region_)
             {
               //std::cout<<"tree index: "<<forest_tree_index_<<std::endl;
-              ComputeNewOutputOnTree( forest_tree_index_, input_index_, input_value_);
+              ComputeNewOutputOnTree( forest_tree_index_);
               new_output_ = true;
               it_map_value_vec_->current_region_ = input_region_;
               // output changed flag
@@ -144,29 +144,29 @@ namespace AlgoComp {
       return true;
     } 
 
-    void ComputeNewOutputOnTree ( unsigned int tree_index_, unsigned int input_index_, double input_value_ )
+    void ComputeNewOutputOnTree ( unsigned int tree_index_)
     {
       AlgoComp::Tree compute_tree_ = forest_->tree_vec_[tree_index_];
-      int temp_node_index_ = 0;
+      int node_index_ = 0;
       int current_predictor_index_;
       double current_predictor_value_, boundary_value_1_, boundary_value_2_;
-      while(!compute_tree_[temp_node_index_].is_leaf_)
+      while(!compute_tree_[node_index_].is_leaf_)
       {
-        current_predictor_index_ = compute_tree_[temp_node_index_].predictor_index_;
-        boundary_value_1_ = compute_tree_[temp_node_index_].boundary_value_vec_[0]; 
-        boundary_value_2_ = compute_tree_[temp_node_index_].boundary_value_vec_[1]; 
+        current_predictor_index_ = compute_tree_[node_index_].predictor_index_;
+        boundary_value_1_ = compute_tree_[node_index_].boundary_value_vec_[0]; 
+        boundary_value_2_ = compute_tree_[node_index_].boundary_value_vec_[1]; 
         std::unordered_map<int, double>::const_iterator current_predictor_it_ = predictors_map_.find(current_predictor_index_); 
 
         if (current_predictor_it_ != predictors_map_.end())
         {
           current_predictor_value_ = current_predictor_it_->second;
           if (current_predictor_value_ < boundary_value_1_)
-            temp_node_index_ = compute_tree_[temp_node_index_].child_node_index_vec_[0];
+            node_index_ = compute_tree_[node_index_].child_node_index_vec_[0];
           else if ( current_predictor_value_ >= boundary_value_1_ && current_predictor_value_ < boundary_value_2_ )
-            temp_node_index_ = compute_tree_[temp_node_index_].child_node_index_vec_[1];
+            node_index_ = compute_tree_[node_index_].child_node_index_vec_[1];
           else 
-            temp_node_index_ = compute_tree_[temp_node_index_].child_node_index_vec_[2];
-          //std::cout<<"jumping to "<<temp_node_index_<<std::endl;
+            node_index_ = compute_tree_[node_index_].child_node_index_vec_[2];
+          //std::cout<<"jumping to "<<node_index_<<std::endl;
           //std::cout<<current_predictor_index_<<","<<current_predictor_value_<<","<<boundary_value_1_<<","<<boundary_value_2_<<std::endl;
         }
         else
@@ -175,7 +175,7 @@ namespace AlgoComp {
           return;
         }
       }
-      forest_output_[tree_index_] = compute_tree_[temp_node_index_].predicted_value_;
+      forest_output_[tree_index_] = compute_tree_[node_index_].predicted_value_;
       //std::cout<<"tree output: "<<forest_output_[tree_index_]<<std::endl;
       return;
     }
