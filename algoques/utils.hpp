@@ -185,6 +185,12 @@ class Forest
       exit ( 0 ) ;
     }
 
+    if ( !is_valid() )
+    {
+      std::cerr << "ERROR: Forest file " << _forest_filename_ << " is not valid." << std::endl;
+      exit ( 0 ) ;
+    }
+
   }
 
   //some basic sanity checks for validity of forest
@@ -196,6 +202,22 @@ class Forest
     for ( unsigned int i=0; i<tree_vec_.size(); i++ )
     {
       if ( tree_vec_[i].empty() ) { return false; }
+
+      std::vector<Node> current_tree_ = tree_vec_[i];
+      for (unsigned int j=0; j<current_tree_.size(); j++)
+      {
+        if ( current_tree_[j].child_node_index_vec_.empty() ) { return false; }
+
+        if ( current_tree_[j].boundary_value_vec_.empty() ) { return false; }
+
+        if ( !current_tree_[j].is_leaf_ && current_tree_[j].predictor_index_ == -1) { return false; } 
+
+        if ( current_tree_[j].boundary_value_vec_[0] == current_tree_[j].boundary_value_vec_[1])
+        {
+          if (current_tree_[j].predictor_index_ != -1) { return false; }
+        } 
+      }
+
     }
 
     return true;

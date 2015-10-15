@@ -30,7 +30,6 @@ namespace AlgoComp {
     void InitializeForest ( const char * const forest_filename_ )
     {
       forest_ = new AlgoComp::Forest(forest_filename_); 
-      // Run tests
       // Build Meta Info
       std::vector<AlgoComp::Tree>::iterator it_tree_ = forest_->tree_vec_.begin();
       while(it_tree_ != forest_->tree_vec_.end())
@@ -110,7 +109,6 @@ namespace AlgoComp {
               ComputeNewOutputOnTree( forest_tree_index_);
               new_output_ = true;
               it_map_value_vec_->current_region_ = input_region_;
-              // output changed flag
             }
             ++it_map_value_vec_;
           }
