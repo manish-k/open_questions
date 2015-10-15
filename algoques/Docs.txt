@@ -1,0 +1,24 @@
+Forest Implementation:
+
+In this program tertiary forest works along with a forest meta information.
+This meta information includes a map for each tree which has a relation of
+predictor index with the associated node index and boundary value assocaited
+with that node. This information will help in making decision whether to
+traverse forest's tree for new output value. New value will be calculated only
+when there is a significant change in predictor value which cause new node
+selection as per boundary values. By using this meta info I observed that
+approximately half of the time forest was accessed to calculate new values on
+every predictor value update.
+
+Currently I am also working on implementing threaded forest in which trees are
+independent of each others. There is a separate branch for this
+implementation. MY current thread implementaion has a poor performance as
+compared to non-threaded because it is creating and joining thread if possible
+for every predictor's value update. For this I am trying to implement a thread
+pool and signaling appropriate thread on significant value change. I will let
+u know if I will find any success with this approach.
+
+
+To check correctness of my meta info logic, I currently checked forest meta
+info with the forest file manually by printing meta map info on stdout. This can be
+automated.
